@@ -1,0 +1,8 @@
+Name: bonds.rpc
+ListenOn: 0.0.0.0:9006
+Mode: dev
+DataSource: root:reyfi_dev_123@tcp(127.0.0.1:3306)/reyfi?charset=utf8mb4&parseTime=true&loc=UTC
+Redis: { Host: 127.0.0.1:6379, Type: node }
+Chain: { ChainId: 31337, Contracts: { BondFactory: "0x0165878A594ca255338adfa4d48449f69242Eb8F" } }
+Kafka: { Brokers: [127.0.0.1:9092], GroupId: bonds-service, Topic: reyfi.bonds.events }
+Log: { ServiceName: bonds.rpc, Mode: console, Level: debug }

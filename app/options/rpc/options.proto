@@ -1,0 +1,117 @@
+syntax = "proto3";
+package options;
+option go_package = "./options";
+
+// ==================== 期权链 ====================
+
+message GetChainsReq {
+    string underlying = 1; // 标的资产, 可选过滤
+    int64 page = 2;
+    int64 page_size = 3;
+}
+
+message OptionChain {
+    string underlying = 1;
+    string underlying_price = 2;
+    repeated OptionStrike strikes = 3;
+    int64 expiry = 4;
+}
+
+message OptionStrike {
+    string strike_price = 1;
+    string call_address = 2;
+    string put_address = 3;
+    string call_premium = 4;
+    string put_premium = 5;
+    string call_iv = 6;
+    string put_iv = 7;
+    string call_volume = 8;
+    string put_volume = 9;
+    string call_oi = 10;
+    string put_oi = 11;
+}
+
+message GetChainsResp {
+    repeated OptionChain chains = 1;
+    int64 total = 2;
+}
+
+// ==================== 波动率曲面 ====================
+
+message GetVolSurfaceReq {
+    string underlying = 1;
+}
+
+message VolPoint {
+    string strike = 1;
+    int64 expiry = 2;
+    string iv = 3;
+}
+
+message GetVolSurfaceResp {
+    string underlying = 1;
+    string spot_price = 2;
+    repeated VolPoint surface = 3;
+}
+
+// ==================== 用户仓位 ====================
+
+message GetPositionsReq {
+    string user_address = 1;
+}
+
+message OptionsPositionInfo {
+    string position_id = 1;
+    string option_address = 2;
+    string underlying = 3;
+    string strike_price = 4;
+    int64 expiry = 5;
+    string option_type = 6; // call / put
+    string side = 7;        // long / short
+    string size = 8;
+    string premium_paid = 9;
+    string current_value = 10;
+    string unrealized_pnl = 11;
+    string status = 12;
+}
+
+message GetPositionsResp {
+    repeated OptionsPositionInfo list = 1;
+}
+
+// ==================== 交易构造 ====================
+
+message BuildWriteOptionReq {
+    string user_address = 1;
+    string option_address = 2;
+    string amount = 3;
+    string collateral_amount = 4;
+}
+
+message BuildBuyOptionReq {
+    string user_address = 1;
+    string option_address = 2;
+    string amount = 3;
+    string max_premium = 4;
+}
+
+message BuildExerciseReq {
+    string user_address = 1;
+    string position_id = 2;
+}
+
+message BuildTxResp {
+    string to = 1;
+    string value = 2;
+    string data = 3;
+    string gas_limit = 4;
+}
+
+service OptionsService {
+    rpc GetChains(GetChainsReq) returns (GetChainsResp);
+    rpc GetVolSurface(GetVolSurfaceReq) returns (GetVolSurfaceResp);
+    rpc GetPositions(GetPositionsReq) returns (GetPositionsResp);
+    rpc BuildWriteOption(BuildWriteOptionReq) returns (BuildTxResp);
+    rpc BuildBuyOption(BuildBuyOptionReq) returns (BuildTxResp);
+    rpc BuildExercise(BuildExerciseReq) returns (BuildTxResp);
+}

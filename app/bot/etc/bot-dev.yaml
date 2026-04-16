@@ -1,0 +1,25 @@
+Name: bot
+Mode: dev
+DataSource: root:reyfi_dev_123@tcp(127.0.0.1:3306)/reyfi?charset=utf8mb4&parseTime=true&loc=UTC
+Redis: { Host: 127.0.0.1:6379, Type: node }
+Chain:
+  RpcUrl: http://127.0.0.1:8545
+  ChainId: 31337
+  Contracts:
+    LendingPool: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+    PerpetualMarket: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
+
+# 定时任务配置
+Jobs:
+  # 清算监控间隔（秒）
+  LiquidationMonitorInterval: 10
+  # 价格更新间隔（秒）
+  PriceUpdateInterval: 30
+  # 日统计聚合时间 (cron 表达式)
+  DailyAggregationCron: "0 1 * * *"
+  # 资金费率结算间隔（秒）
+  FundingSettlementInterval: 3600
+  # 期权到期检查间隔（秒）
+  OptionsExpiryCheckInterval: 60
+
+Log: { ServiceName: bot, Mode: console, Level: debug }

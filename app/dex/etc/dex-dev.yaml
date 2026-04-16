@@ -1,0 +1,37 @@
+# DEX RPC 服务配置 - 开发环境
+Name: dex.rpc
+ListenOn: 0.0.0.0:9001
+Mode: dev
+
+# 数据库
+DataSource: root:reyfi_dev_123@tcp(127.0.0.1:3306)/reyfi?charset=utf8mb4&parseTime=true&loc=UTC
+
+# 缓存
+Cache:
+  - Host: 127.0.0.1:6379
+
+# Redis
+Redis:
+  Host: 127.0.0.1:6379
+  Type: node
+
+# 链上配置
+Chain:
+  RpcUrl: http://127.0.0.1:8545
+  ChainId: 31337
+  Contracts:
+    Factory: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    Router: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+
+# Kafka 消费者
+Kafka:
+  Brokers:
+    - 127.0.0.1:9092
+  GroupId: dex-service
+  Topic: reyfi.dex.events
+
+# 日志
+Log:
+  ServiceName: dex.rpc
+  Mode: console
+  Level: debug

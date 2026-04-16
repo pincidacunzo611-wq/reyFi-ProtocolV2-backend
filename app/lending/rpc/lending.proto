@@ -1,0 +1,151 @@
+syntax = "proto3";
+
+package lending;
+
+option go_package = "./lending";
+
+// ==================== 市场查询 ====================
+
+message GetMarketsReq {
+    int64 page = 1;
+    int64 page_size = 2;
+    string keyword = 3;
+}
+
+message MarketInfo {
+    string asset_address = 1;
+    string asset_symbol = 2;
+    int32  asset_decimals = 3;
+    string total_supply = 4;
+    string total_borrow = 5;
+    string supply_apr = 6;
+    string borrow_apr = 7;
+    string utilization_rate = 8;
+    string tvl_usd = 9;
+    string collateral_factor = 10;
+    string liquidation_threshold = 11;
+    bool   is_active = 12;
+}
+
+message GetMarketsResp {
+    repeated MarketInfo list = 1;
+    int64 total = 2;
+}
+
+message GetMarketDetailReq {
+    string asset_address = 1;
+}
+
+message GetMarketDetailResp {
+    MarketInfo market = 1;
+    string available_liquidity = 2;
+    string reserve_factor = 3;
+    string liquidation_penalty = 4;
+    repeated RateHistoryItem rate_history = 5;
+}
+
+message RateHistoryItem {
+    int64  timestamp = 1;
+    string supply_apr = 2;
+    string borrow_apr = 3;
+    string utilization = 4;
+}
+
+// ==================== 用户仓位 ====================
+
+message GetUserPositionReq {
+    string user_address = 1;
+}
+
+message UserLendingPosition {
+    string asset_address = 1;
+    string asset_symbol = 2;
+    string supplied_amount = 3;
+    string supplied_usd = 4;
+    string borrowed_amount = 5;
+    string borrowed_usd = 6;
+    string supply_apr = 7;
+    string borrow_apr = 8;
+    bool   collateral_enabled = 9;
+}
+
+message GetUserPositionResp {
+    repeated UserLendingPosition positions = 1;
+    string total_supplied_usd = 2;
+    string total_borrowed_usd = 3;
+    string net_apr = 4;
+    string health_factor = 5;
+    string borrow_limit = 6;
+    string borrow_limit_used = 7;
+}
+
+// ==================== 交易构造 ====================
+
+message BuildSupplyReq {
+    string user_address = 1;
+    string asset_address = 2;
+    string amount = 3;
+}
+
+message BuildBorrowReq {
+    string user_address = 1;
+    string asset_address = 2;
+    string amount = 3;
+}
+
+message BuildRepayReq {
+    string user_address = 1;
+    string asset_address = 2;
+    string amount = 3;
+}
+
+message BuildWithdrawReq {
+    string user_address = 1;
+    string asset_address = 2;
+    string amount = 3;
+}
+
+message BuildTxResp {
+    string to = 1;
+    string value = 2;
+    string data = 3;
+    string gas_limit = 4;
+    string estimated_gas_usd = 5;
+}
+
+// ==================== 清算记录 ====================
+
+message GetLiquidationsReq {
+    string asset_address = 1;
+    string user_address = 2;
+    int64  page = 3;
+    int64  page_size = 4;
+}
+
+message LiquidationInfo {
+    string borrower = 1;
+    string liquidator = 2;
+    string collateral_asset = 3;
+    string debt_asset = 4;
+    string collateral_amount = 5;
+    string debt_amount = 6;
+    string penalty_amount = 7;
+    string tx_hash = 8;
+    string block_time = 9;
+}
+
+message GetLiquidationsResp {
+    repeated LiquidationInfo list = 1;
+    int64 total = 2;
+}
+
+service LendingService {
+    rpc GetMarkets(GetMarketsReq) returns (GetMarketsResp);
+    rpc GetMarketDetail(GetMarketDetailReq) returns (GetMarketDetailResp);
+    rpc GetUserPosition(GetUserPositionReq) returns (GetUserPositionResp);
+    rpc GetLiquidations(GetLiquidationsReq) returns (GetLiquidationsResp);
+    rpc BuildSupply(BuildSupplyReq) returns (BuildTxResp);
+    rpc BuildBorrow(BuildBorrowReq) returns (BuildTxResp);
+    rpc BuildRepay(BuildRepayReq) returns (BuildTxResp);
+    rpc BuildWithdraw(BuildWithdrawReq) returns (BuildTxResp);
+}

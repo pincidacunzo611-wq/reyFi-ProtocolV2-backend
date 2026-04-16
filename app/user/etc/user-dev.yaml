@@ -1,0 +1,20 @@
+# User RPC 服务配置 - 开发环境
+Name: user.rpc
+ListenOn: 0.0.0.0:9008
+Mode: dev
+
+DataSource: root:reyfi_dev_123@tcp(127.0.0.1:3306)/reyfi?charset=utf8mb4&parseTime=true&loc=UTC
+
+Redis:
+  Host: 127.0.0.1:6379
+  Type: node
+
+JwtAuth:
+  AccessSecret: reyfi-jwt-secret-dev-2026-change-in-prod
+  AccessExpire: 7200
+  RefreshExpire: 604800
+
+Log:
+  ServiceName: user.rpc
+  Mode: console
+  Level: debug

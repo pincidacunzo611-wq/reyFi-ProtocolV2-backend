@@ -1,0 +1,184 @@
+syntax = "proto3";
+
+package dex;
+
+option go_package = "./dex";
+
+// ==================== 请求/响应消息 ====================
+
+message GetPairsReq {
+    int64 page = 1;
+    int64 page_size = 2;
+    string keyword = 3;
+    string token0 = 4;
+    string token1 = 5;
+    string sort_by = 6;
+    string sort_order = 7;
+}
+
+message PairInfo {
+    string pair_address = 1;
+    string token0_address = 2;
+    string token1_address = 3;
+    string token0_symbol = 4;
+    string token1_symbol = 5;
+    int32  token0_decimals = 6;
+    int32  token1_decimals = 7;
+    string reserve0 = 8;
+    string reserve1 = 9;
+    string price = 10;
+    string price_change_24h = 11;
+    string volume_24h = 12;
+    string tvl = 13;
+    string fee_apr = 14;
+    int32  fee_bps = 15;
+    bool   is_active = 16;
+}
+
+message GetPairsResp {
+    repeated PairInfo list = 1;
+    int64 total = 2;
+}
+
+message GetPairDetailReq {
+    string pair_address = 1;
+}
+
+message GetPairDetailResp {
+    PairInfo pair = 1;
+    string volume_7d = 2;
+    string fees_24h = 3;
+    string fees_7d = 4;
+    string high_24h = 5;
+    string low_24h = 6;
+}
+
+message GetTradesReq {
+    string pair_address = 1;
+    string address = 2;
+    int64 page = 3;
+    int64 page_size = 4;
+}
+
+message TradeInfo {
+    string tx_hash = 1;
+    string pair_address = 2;
+    string trader_address = 3;
+    string direction = 4;
+    string amount0 = 5;
+    string amount1 = 6;
+    string amount_usd = 7;
+    string price = 8;
+    int64  block_time = 9;
+}
+
+message GetTradesResp {
+    repeated TradeInfo list = 1;
+    int64 total = 2;
+}
+
+message GetCandlesReq {
+    string pair_address = 1;
+    string interval = 2;
+    int64  from = 3;
+    int64  to = 4;
+}
+
+message CandleInfo {
+    int64  time = 1;
+    string open = 2;
+    string high = 3;
+    string low = 4;
+    string close = 5;
+    string volume = 6;
+}
+
+message GetCandlesResp {
+    repeated CandleInfo candles = 1;
+}
+
+message GetOverviewReq {}
+
+message GetOverviewResp {
+    string total_tvl = 1;
+    string total_volume_24h = 2;
+    string total_fees_24h = 3;
+    int64  total_pairs = 4;
+    repeated PairInfo top_pairs = 5;
+}
+
+message GetPositionsReq {
+    string user_address = 1;
+}
+
+message LPPosition {
+    string pair_address = 1;
+    string token0_symbol = 2;
+    string token1_symbol = 3;
+    string lp_balance = 4;
+    string share_ratio = 5;
+    string value_usd = 6;
+    string pending_reward = 7;
+}
+
+message GetPositionsResp {
+    repeated LPPosition list = 1;
+}
+
+message BuildSwapReq {
+    string user_address = 1;
+    string token_in = 2;
+    string token_out = 3;
+    string amount_in = 4;
+    int32  slippage_bps = 5;
+    string receiver = 6;
+}
+
+message BuildSwapResp {
+    string to = 1;
+    string value = 2;
+    string data = 3;
+    string gas_limit = 4;
+    string min_amount_out = 5;
+    string price_impact = 6;
+    repeated string route = 7;
+    string estimated_gas_usd = 8;
+}
+
+// ==================== 路由查询（最佳兑换路径）====================
+
+message FindBestRouteReq {
+    string token_in = 1;       // 输入代币地址
+    string token_out = 2;      // 输出代币地址
+    string amount_in = 3;      // 输入金额（wei 字符串）
+    int32  max_hops = 4;       // 最大跳数，默认 3
+    int32  max_results = 5;    // 返回最多几条路径，默认 3
+}
+
+message RouteInfo {
+    repeated string path = 1;           // 代币地址序列
+    repeated string pairs = 2;          // 经过的交易对地址
+    repeated string path_symbols = 3;   // 代币符号序列（便于展示）
+    string amount_out = 4;              // 预计输出金额
+    string price_impact = 5;            // 价格影响百分比
+    repeated int32 fee_bps = 6;         // 每一跳的手续费
+}
+
+message FindBestRouteResp {
+    RouteInfo best_route = 1;            // 最优路径
+    repeated RouteInfo alternatives = 2; // 备选路径
+    string rate = 3;                     // 汇率（amountOut/amountIn）
+}
+
+// ==================== 服务定义 ====================
+
+service DexService {
+    rpc GetPairs(GetPairsReq) returns (GetPairsResp);
+    rpc GetPairDetail(GetPairDetailReq) returns (GetPairDetailResp);
+    rpc GetTrades(GetTradesReq) returns (GetTradesResp);
+    rpc GetCandles(GetCandlesReq) returns (GetCandlesResp);
+    rpc GetOverview(GetOverviewReq) returns (GetOverviewResp);
+    rpc GetPositions(GetPositionsReq) returns (GetPositionsResp);
+    rpc BuildSwap(BuildSwapReq) returns (BuildSwapResp);
+    rpc FindBestRoute(FindBestRouteReq) returns (FindBestRouteResp);
+}

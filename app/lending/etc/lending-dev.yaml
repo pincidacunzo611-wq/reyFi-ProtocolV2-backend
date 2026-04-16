@@ -1,0 +1,28 @@
+Name: lending.rpc
+ListenOn: 0.0.0.0:9002
+Mode: dev
+
+DataSource: root:reyfi_dev_123@tcp(127.0.0.1:3306)/reyfi?charset=utf8mb4&parseTime=true&loc=UTC
+
+Cache:
+  - Host: 127.0.0.1:6379
+
+Redis:
+  Host: 127.0.0.1:6379
+  Type: node
+
+Chain:
+  ChainId: 31337
+  Contracts:
+    LendingPool: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+
+Kafka:
+  Brokers:
+    - 127.0.0.1:9092
+  GroupId: lending-service
+  Topic: reyfi.lending.events
+
+Log:
+  ServiceName: lending.rpc
+  Mode: console
+  Level: debug

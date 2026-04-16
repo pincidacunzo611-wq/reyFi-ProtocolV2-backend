@@ -1,0 +1,370 @@
+// ReyFi Gateway API 定义
+// 此文件描述所有 HTTP 路由，可用 goctl 生成代码
+type (
+	// ========== 通用 ==========
+	PageReq {
+		Page     int64 `form:"page,default=1"`
+		PageSize int64 `form:"pageSize,default=20"`
+	}
+	// ========== DEX ==========
+	DexPairsReq {
+		Page     int64  `form:"page,default=1"`
+		PageSize int64  `form:"pageSize,default=20"`
+		Keyword  string `form:"keyword,optional"`
+		SortBy   string `form:"sortBy,optional"`
+	}
+	DexPairDetailReq {
+		PairAddress string `path:"pairAddress"`
+	}
+	DexTradesReq {
+		PairAddress string `path:"pairAddress"`
+		Page        int64  `form:"page,default=1"`
+		PageSize    int64  `form:"pageSize,default=20"`
+	}
+	DexCandlesReq {
+		PairAddress string `path:"pairAddress"`
+		Interval    string `form:"interval,default=1h"`
+		From        int64  `form:"from,optional"`
+		To          int64  `form:"to,optional"`
+	}
+	DexSwapBuildReq {
+		TokenIn     string `json:"tokenIn"`
+		TokenOut    string `json:"tokenOut"`
+		AmountIn    string `json:"amountIn"`
+		SlippageBps int    `json:"slippageBps,default=50"`
+	}
+	DexFindRouteReq {
+		TokenIn    string `form:"tokenIn"`
+		TokenOut   string `form:"tokenOut"`
+		AmountIn   string `form:"amountIn"`
+		MaxHops    int    `form:"maxHops,default=3"`
+		MaxResults int    `form:"maxResults,default=3"`
+	}
+	// ========== User Auth ==========
+	AuthNonceReq {
+		Address string `json:"address"`
+	}
+	AuthLoginReq {
+		Address   string `json:"address"`
+		Message   string `json:"message"`
+		Signature string `json:"signature"`
+	}
+	AuthRefreshReq {
+		RefreshToken string `json:"refreshToken"`
+	}
+	// ========== User Data ==========
+	UserActivityReq {
+		Page     int64  `form:"page,default=1"`
+		PageSize int64  `form:"pageSize,default=20"`
+		Module   string `form:"module,optional"`
+	}
+	UserSettingsReq {
+		Nickname        string `json:"nickname,optional"`
+		Language        string `json:"language,optional"`
+		Currency        string `json:"currency,optional"`
+		SlippageDefault int    `json:"slippageDefault,optional"`
+	}
+	// ========== Lending ==========
+	LendingMarketsReq {
+		Page     int64  `form:"page,default=1"`
+		PageSize int64  `form:"pageSize,default=20"`
+		Keyword  string `form:"keyword,optional"`
+	}
+	LendingMarketDetailReq {
+		AssetAddress string `path:"assetAddress"`
+	}
+	LendingLiquidationsReq {
+		AssetAddress string `form:"assetAddress,optional"`
+		UserAddress  string `form:"userAddress,optional"`
+		Page         int64  `form:"page,default=1"`
+		PageSize     int64  `form:"pageSize,default=20"`
+	}
+	LendingBuildSupplyReq {
+		AssetAddress string `json:"assetAddress"`
+		Amount       string `json:"amount"`
+	}
+	LendingBuildBorrowReq {
+		AssetAddress string `json:"assetAddress"`
+		Amount       string `json:"amount"`
+	}
+	LendingBuildRepayReq {
+		AssetAddress string `json:"assetAddress"`
+		Amount       string `json:"amount"`
+	}
+	LendingBuildWithdrawReq {
+		AssetAddress string `json:"assetAddress"`
+		Amount       string `json:"amount"`
+	}
+	// ========== Futures ==========
+	FuturesMarketsReq {
+		Page     int64 `form:"page,default=1"`
+		PageSize int64 `form:"pageSize,default=20"`
+	}
+	FuturesMarketDetailReq {
+		MarketAddress string `path:"marketAddress"`
+	}
+	FuturesFundingHistoryReq {
+		MarketAddress string `path:"marketAddress"`
+		Page          int64  `form:"page,default=1"`
+		PageSize      int64  `form:"pageSize,default=20"`
+	}
+	FuturesBuildOpenReq {
+		MarketAddress string `json:"marketAddress"`
+		Side          string `json:"side"`
+		Margin        string `json:"margin"`
+		Leverage      string `json:"leverage"`
+		LimitPrice    string `json:"limitPrice,optional"`
+	}
+	FuturesBuildCloseReq {
+		PositionId string `json:"positionId"`
+		Amount     string `json:"amount,optional"`
+	}
+	FuturesBuildAdjustMarginReq {
+		PositionId string `json:"positionId"`
+		Amount     string `json:"amount"`
+		IsAdd      bool   `json:"isAdd"`
+	}
+	// ========== Options ==========
+	OptionsVolSurfaceReq {
+		Underlying string `path:"underlying"`
+	}
+	// ========== Vault ==========
+	VaultListReq {
+		Page     int64 `form:"page,default=1"`
+		PageSize int64 `form:"pageSize,default=20"`
+	}
+	VaultDetailReq {
+		VaultAddress string `path:"vaultAddress"`
+	}
+	VaultBuildDepositReq {
+		VaultAddress string `json:"vaultAddress"`
+		Amount       string `json:"amount"`
+	}
+	VaultBuildWithdrawReq {
+		VaultAddress string `json:"vaultAddress"`
+		Shares       string `json:"shares"`
+	}
+	// ========== Bonds ==========
+	BondsMarketsReq {
+		Page     int64 `form:"page,default=1"`
+		PageSize int64 `form:"pageSize,default=20"`
+	}
+	BondsMarketDetailReq {
+		MarketAddress string `path:"marketAddress"`
+	}
+	BondsBuildPurchaseReq {
+		MarketAddress string `json:"marketAddress"`
+		Amount        string `json:"amount"`
+	}
+	BondsBuildClaimReq {
+		BondId string `json:"bondId"`
+	}
+	// ========== Governance ==========
+	GovProposalsReq {
+		Page     int64  `form:"page,default=1"`
+		PageSize int64  `form:"pageSize,default=20"`
+		Status   string `form:"status,optional"`
+	}
+	GovProposalDetailReq {
+		ProposalId string `path:"proposalId"`
+	}
+	GovVotesReq {
+		ProposalId string `path:"proposalId"`
+		Page       int64  `form:"page,default=1"`
+		PageSize   int64  `form:"pageSize,default=20"`
+	}
+	GovBuildVoteReq {
+		ProposalId string `json:"proposalId"`
+		Support    int    `json:"support"`
+		Reason     string `json:"reason,optional"`
+	}
+	GovBuildLockReq {
+		Amount   string `json:"amount"`
+		Duration int64  `json:"duration"`
+	}
+	// ========== System ==========
+	SystemReindexReq {
+		Module    string `json:"module"`
+		FromBlock int64  `json:"fromBlock"`
+		ToBlock   int64  `json:"toBlock"`
+	}
+)
+
+// ==================== 路由定义 ====================
+// ==================== 公开路由（无需登录）====================
+@server (
+	prefix: /api
+)
+service gateway {
+	// ----- DEX 公开 -----
+	@handler DexGetPairs
+	get /dex/pairs (DexPairsReq)
+
+	@handler DexGetPairDetail
+	get /dex/pairs/:pairAddress (DexPairDetailReq)
+
+	@handler DexGetTrades
+	get /dex/pairs/:pairAddress/trades (DexTradesReq)
+
+	@handler DexGetCandles
+	get /dex/pairs/:pairAddress/candles (DexCandlesReq)
+
+	@handler DexGetOverview
+	get /dex/overview
+
+	@handler DexFindRoute
+	get /dex/route (DexFindRouteReq)
+
+	// ----- User Auth 公开 -----
+	@handler UserGetNonce
+	post /user/auth/nonce (AuthNonceReq)
+
+	@handler UserLogin
+	post /user/auth/login (AuthLoginReq)
+
+	@handler UserRefreshToken
+	post /user/auth/refresh (AuthRefreshReq)
+
+	// ----- Lending 公开 -----
+	@handler LendingGetMarkets
+	get /lending/markets (LendingMarketsReq)
+
+	@handler LendingGetMarketDetail
+	get /lending/markets/:assetAddress (LendingMarketDetailReq)
+
+	@handler LendingGetLiquidations
+	get /lending/liquidations (LendingLiquidationsReq)
+
+	// ----- Futures 公开 -----
+	@handler FuturesGetMarkets
+	get /futures/markets (FuturesMarketsReq)
+
+	@handler FuturesGetMarketDetail
+	get /futures/markets/:marketAddress (FuturesMarketDetailReq)
+
+	@handler FuturesGetFundingHistory
+	get /futures/markets/:marketAddress/funding (FuturesFundingHistoryReq)
+
+	// ----- Options 公开 -----
+	@handler OptionsGetChains
+	get /options/chains
+
+	@handler OptionsGetVolSurface
+	get /options/vol-surface/:underlying (OptionsVolSurfaceReq)
+
+	// ----- Vault 公开 -----
+	@handler VaultGetList
+	get /vault/list (VaultListReq)
+
+	@handler VaultGetDetail
+	get /vault/:vaultAddress (VaultDetailReq)
+
+	// ----- Bonds 公开 -----
+	@handler BondsGetMarkets
+	get /bonds/markets (BondsMarketsReq)
+
+	@handler BondsGetMarketDetail
+	get /bonds/markets/:marketAddress (BondsMarketDetailReq)
+
+	// ----- Governance 公开 -----
+	@handler GovGetProposals
+	get /governance/proposals (GovProposalsReq)
+
+	@handler GovGetProposalDetail
+	get /governance/proposals/:proposalId (GovProposalDetailReq)
+
+	@handler GovGetVotes
+	get /governance/proposals/:proposalId/votes (GovVotesReq)
+
+	// ----- System 公开 -----
+	@handler SystemSyncStatus
+	get /system/sync-status
+}
+
+// ==================== 需登录路由（JWT 鉴权）====================
+@server (
+	prefix: /api
+	jwt:    JwtAuth
+)
+service gateway {
+	// ----- DEX 需登录 -----
+	@handler DexGetPositions
+	get /dex/positions
+
+	@handler DexBuildSwap
+	post /dex/swap/build (DexSwapBuildReq)
+
+	// ----- User 需登录 -----
+	@handler UserGetPortfolio
+	get /user/portfolio
+
+	@handler UserGetActivity
+	get /user/activity (UserActivityReq)
+
+	@handler UserUpdateSettings
+	put /user/settings (UserSettingsReq)
+
+	// ----- Lending 需登录 -----
+	@handler LendingGetUserPosition
+	get /lending/position
+
+	@handler LendingBuildSupply
+	post /lending/supply/build (LendingBuildSupplyReq)
+
+	@handler LendingBuildBorrow
+	post /lending/borrow/build (LendingBuildBorrowReq)
+
+	@handler LendingBuildRepay
+	post /lending/repay/build (LendingBuildRepayReq)
+
+	@handler LendingBuildWithdraw
+	post /lending/withdraw/build (LendingBuildWithdrawReq)
+
+	// ----- Futures 需登录 -----
+	@handler FuturesGetPositions
+	get /futures/positions
+
+	@handler FuturesBuildOpen
+	post /futures/position/open (FuturesBuildOpenReq)
+
+	@handler FuturesBuildClose
+	post /futures/position/close (FuturesBuildCloseReq)
+
+	@handler FuturesBuildAdjustMargin
+	post /futures/position/adjust-margin (FuturesBuildAdjustMarginReq)
+
+	// ----- Options 需登录 -----
+	@handler OptionsGetPositions
+	get /options/positions
+
+	// ----- Vault 需登录 -----
+	@handler VaultGetPositions
+	get /vault/positions
+
+	@handler VaultBuildDeposit
+	post /vault/deposit/build (VaultBuildDepositReq)
+
+	@handler VaultBuildWithdraw
+	post /vault/withdraw/build (VaultBuildWithdrawReq)
+
+	// ----- Bonds 需登录 -----
+	@handler BondsGetPositions
+	get /bonds/positions
+
+	@handler BondsBuildPurchase
+	post /bonds/purchase/build (BondsBuildPurchaseReq)
+
+	@handler BondsBuildClaim
+	post /bonds/claim/build (BondsBuildClaimReq)
+
+	// ----- Governance 需登录 -----
+	@handler GovGetVeLock
+	get /governance/ve-lock
+
+	@handler GovBuildVote
+	post /governance/vote/build (GovBuildVoteReq)
+
+	@handler GovBuildLock
+	post /governance/lock/build (GovBuildLockReq)
+}
+

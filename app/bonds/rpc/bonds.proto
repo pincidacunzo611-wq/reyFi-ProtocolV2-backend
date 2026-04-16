@@ -1,0 +1,93 @@
+syntax = "proto3";
+package bonds;
+option go_package = "./bonds";
+
+// ==================== Bond 市场 ====================
+
+message GetMarketsReq {
+    int64 page = 1;
+    int64 page_size = 2;
+}
+
+message BondMarketInfo {
+    string market_address = 1;
+    string market_name = 2;
+    string payout_token = 3;
+    string quote_token = 4;
+    string price = 5;
+    string discount = 6;
+    string max_payout = 7;
+    string capacity_remaining = 8;
+    int64 vesting_term = 9;
+    bool is_active = 10;
+    string total_bonded_usd = 11;
+}
+
+message GetMarketsResp {
+    repeated BondMarketInfo list = 1;
+    int64 total = 2;
+}
+
+// ==================== Bond 详情 ====================
+
+message GetMarketDetailReq {
+    string market_address = 1;
+}
+
+message GetMarketDetailResp {
+    BondMarketInfo market = 1;
+    string min_price = 2;
+    string roi = 3;
+    string total_purchased = 4;
+}
+
+// ==================== 用户仓位 ====================
+
+message GetPositionsReq {
+    string user_address = 1;
+}
+
+message BondPositionInfo {
+    string bond_id = 1;
+    string market_name = 2;
+    string payout_token = 3;
+    string payout_amount = 4;
+    string paid_amount = 5;
+    string pending_payout = 6;
+    int64 vesting_end = 7;
+    string percent_vested = 8;
+    bool fully_vested = 9;
+}
+
+message GetPositionsResp {
+    repeated BondPositionInfo list = 1;
+}
+
+// ==================== 交易构造 ====================
+
+message BuildPurchaseReq {
+    string user_address = 1;
+    string market_address = 2;
+    string amount = 3;
+    string max_price = 4;
+}
+
+message BuildClaimReq {
+    string user_address = 1;
+    string bond_id = 2;
+}
+
+message BuildTxResp {
+    string to = 1;
+    string value = 2;
+    string data = 3;
+    string gas_limit = 4;
+}
+
+service BondsService {
+    rpc GetMarkets(GetMarketsReq) returns (GetMarketsResp);
+    rpc GetMarketDetail(GetMarketDetailReq) returns (GetMarketDetailResp);
+    rpc GetPositions(GetPositionsReq) returns (GetPositionsResp);
+    rpc BuildPurchase(BuildPurchaseReq) returns (BuildTxResp);
+    rpc BuildClaim(BuildClaimReq) returns (BuildTxResp);
+}

@@ -1,0 +1,93 @@
+syntax = "proto3";
+package vault;
+option go_package = "./vault";
+
+// ==================== Vault 列表 ====================
+
+message GetVaultsReq {
+    int64 page = 1;
+    int64 page_size = 2;
+    string keyword = 3;
+}
+
+message VaultInfo {
+    string vault_address = 1;
+    string vault_name = 2;
+    string strategy = 3;
+    string underlying_asset = 4;
+    string tvl = 5;
+    string apy = 6;
+    string total_shares = 7;
+    string share_price = 8;
+    string deposit_cap = 9;
+    bool is_active = 10;
+}
+
+message GetVaultsResp {
+    repeated VaultInfo list = 1;
+    int64 total = 2;
+}
+
+// ==================== Vault 详情 ====================
+
+message GetVaultDetailReq {
+    string vault_address = 1;
+}
+
+message GetVaultDetailResp {
+    VaultInfo vault = 1;
+    string total_deposited = 2;
+    string performance_fee = 3;
+    string management_fee = 4;
+    string apy_7d = 5;
+    string apy_30d = 6;
+}
+
+// ==================== 用户仓位 ====================
+
+message GetPositionsReq {
+    string user_address = 1;
+}
+
+message VaultPositionInfo {
+    string vault_address = 1;
+    string vault_name = 2;
+    string shares = 3;
+    string value_usd = 4;
+    string deposit_amount = 5;
+    string earnings = 6;
+    string apy = 7;
+}
+
+message GetPositionsResp {
+    repeated VaultPositionInfo list = 1;
+}
+
+// ==================== 交易构造 ====================
+
+message BuildDepositReq {
+    string user_address = 1;
+    string vault_address = 2;
+    string amount = 3;
+}
+
+message BuildWithdrawReq {
+    string user_address = 1;
+    string vault_address = 2;
+    string shares = 3;
+}
+
+message BuildTxResp {
+    string to = 1;
+    string value = 2;
+    string data = 3;
+    string gas_limit = 4;
+}
+
+service VaultService {
+    rpc GetVaults(GetVaultsReq) returns (GetVaultsResp);
+    rpc GetVaultDetail(GetVaultDetailReq) returns (GetVaultDetailResp);
+    rpc GetPositions(GetPositionsReq) returns (GetPositionsResp);
+    rpc BuildDeposit(BuildDepositReq) returns (BuildTxResp);
+    rpc BuildWithdraw(BuildWithdrawReq) returns (BuildTxResp);
+}

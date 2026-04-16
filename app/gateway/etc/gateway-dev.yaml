@@ -1,0 +1,93 @@
+# Gateway 配置 - 开发环境
+Name: gateway
+Host: 0.0.0.0
+Port: 8888
+Mode: dev
+
+# JWT
+JwtAuth:
+  AccessSecret: reyfi-jwt-secret-dev-2026-change-in-prod
+  AccessExpire: 7200
+
+# Redis
+Redis:
+  Host: 127.0.0.1:6379
+  Type: node
+
+# 下游 RPC 服务
+DexRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: dex.rpc
+  NonBlock: true
+  Timeout: 5000
+  # 直连模式（开发环境无 Etcd 时使用）
+  # Endpoints:
+  #   - 127.0.0.1:9001
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+  NonBlock: true
+  Timeout: 5000
+
+LendingRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: lending.rpc
+  NonBlock: true
+  Timeout: 5000
+
+FuturesRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: futures.rpc
+  NonBlock: true
+  Timeout: 5000
+
+OptionsRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: options.rpc
+  NonBlock: true
+  Timeout: 5000
+
+VaultRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: vault.rpc
+  NonBlock: true
+  Timeout: 5000
+
+BondsRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: bonds.rpc
+  NonBlock: true
+  Timeout: 5000
+
+GovernanceRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: governance.rpc
+  NonBlock: true
+  Timeout: 5000
+
+# 日志
+Log:
+  ServiceName: gateway
+  Mode: console
+  Level: debug
+
+# 超时和并发
+Timeout: 10000
+MaxConns: 1000

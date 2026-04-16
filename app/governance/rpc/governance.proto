@@ -1,0 +1,110 @@
+syntax = "proto3";
+package governance;
+option go_package = "./governance";
+
+// ==================== 提案列表 ====================
+
+message GetProposalsReq {
+    int64 page = 1;
+    int64 page_size = 2;
+    string status = 3; // active / passed / defeated / all
+}
+
+message ProposalInfo {
+    string proposal_id = 1;
+    string title = 2;
+    string description = 3;
+    string proposer = 4;
+    string status = 5;
+    string for_votes = 6;
+    string against_votes = 7;
+    string abstain_votes = 8;
+    int64 start_time = 9;
+    int64 end_time = 10;
+    string quorum = 11;
+    string quorum_required = 12;
+}
+
+message GetProposalsResp {
+    repeated ProposalInfo list = 1;
+    int64 total = 2;
+}
+
+// ==================== 提案详情 ====================
+
+message GetProposalDetailReq {
+    string proposal_id = 1;
+}
+
+message GetProposalDetailResp {
+    ProposalInfo proposal = 1;
+    repeated string targets = 2;
+    repeated string calldatas = 3;
+    string snapshot_block = 4;
+}
+
+// ==================== 投票记录 ====================
+
+message GetVotesReq {
+    string proposal_id = 1;
+    int64 page = 2;
+    int64 page_size = 3;
+}
+
+message VoteInfo {
+    string voter = 1;
+    int32 support = 2;
+    string weight = 3;
+    string reason = 4;
+    int64 block_time = 5;
+    string tx_hash = 6;
+}
+
+message GetVotesResp {
+    repeated VoteInfo list = 1;
+    int64 total = 2;
+}
+
+// ==================== VE Lock ====================
+
+message GetVeLockReq {
+    string user_address = 1;
+}
+
+message GetVeLockResp {
+    string lock_amount = 1;
+    string voting_power = 2;
+    int64 unlock_time = 3;
+    string lock_duration = 4;
+}
+
+// ==================== 交易构造 ====================
+
+message BuildVoteReq {
+    string user_address = 1;
+    string proposal_id = 2;
+    int32 support = 3;
+    string reason = 4;
+}
+
+message BuildLockReq {
+    string user_address = 1;
+    string amount = 2;
+    int64 duration = 3;
+}
+
+message BuildTxResp {
+    string to = 1;
+    string value = 2;
+    string data = 3;
+    string gas_limit = 4;
+}
+
+service GovernanceService {
+    rpc GetProposals(GetProposalsReq) returns (GetProposalsResp);
+    rpc GetProposalDetail(GetProposalDetailReq) returns (GetProposalDetailResp);
+    rpc GetVotes(GetVotesReq) returns (GetVotesResp);
+    rpc GetVeLock(GetVeLockReq) returns (GetVeLockResp);
+    rpc BuildVote(BuildVoteReq) returns (BuildTxResp);
+    rpc BuildLock(BuildLockReq) returns (BuildTxResp);
+}

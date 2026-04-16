@@ -1,0 +1,8 @@
+Name: vault.rpc
+ListenOn: 0.0.0.0:9005
+Mode: dev
+DataSource: root:reyfi_dev_123@tcp(127.0.0.1:3306)/reyfi?charset=utf8mb4&parseTime=true&loc=UTC
+Redis: { Host: 127.0.0.1:6379, Type: node }
+Chain: { ChainId: 31337, Contracts: { VaultFactory: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707" } }
+Kafka: { Brokers: [127.0.0.1:9092], GroupId: vault-service, Topic: reyfi.vault.events }
+Log: { ServiceName: vault.rpc, Mode: console, Level: debug }

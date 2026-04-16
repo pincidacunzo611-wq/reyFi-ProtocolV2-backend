@@ -1,0 +1,8 @@
+Name: governance.rpc
+ListenOn: 0.0.0.0:9007
+Mode: dev
+DataSource: root:reyfi_dev_123@tcp(127.0.0.1:3306)/reyfi?charset=utf8mb4&parseTime=true&loc=UTC
+Redis: { Host: 127.0.0.1:6379, Type: node }
+Chain: { ChainId: 31337, Contracts: { Governor: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853" } }
+Kafka: { Brokers: [127.0.0.1:9092], GroupId: governance-service, Topic: reyfi.governance.events }
+Log: { ServiceName: governance.rpc, Mode: console, Level: debug }

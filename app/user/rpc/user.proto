@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./user";
+
+// ==================== Auth ====================
+
+message GetNonceReq {
+    string address = 1;
+}
+
+message GetNonceResp {
+    string address = 1;
+    string nonce = 2;
+    int64  expires_in = 3;
+}
+
+message LoginReq {
+    string address = 1;
+    string message = 2;
+    string signature = 3;
+}
+
+message LoginResp {
+    string access_token = 1;
+    string refresh_token = 2;
+    int64  expires_in = 3;
+}
+
+message RefreshTokenReq {
+    string refresh_token = 1;
+}
+
+message RefreshTokenResp {
+    string access_token = 1;
+    string refresh_token = 2;
+    int64  expires_in = 3;
+}
+
+// ==================== Portfolio ====================
+
+message GetPortfolioReq {
+    string wallet_address = 1;
+}
+
+message ModuleAllocation {
+    string module = 1;
+    string label = 2;
+    string value_usd = 3;
+    string percent = 4;
+}
+
+message RiskSummary {
+    string lending_health_factor = 1;
+    string futures_margin_ratio = 2;
+    string risk_level = 3;
+}
+
+message GetPortfolioResp {
+    string wallet_address = 1;
+    string total_asset_usd = 2;
+    string total_debt_usd = 3;
+    string net_value_usd = 4;
+    string pnl_24h = 5;
+    string pnl_24h_percent = 6;
+    repeated ModuleAllocation allocation = 7;
+    RiskSummary risk_summary = 8;
+}
+
+// ==================== Activity ====================
+
+message GetActivityReq {
+    string wallet_address = 1;
+    string module = 2;
+    int64  page = 3;
+    int64  page_size = 4;
+}
+
+message ActivityItem {
+    int64  id = 1;
+    string module = 2;
+    string action = 3;
+    string summary = 4;
+    string amount_usd = 5;
+    string tx_hash = 6;
+    string block_time = 7;
+}
+
+message GetActivityResp {
+    repeated ActivityItem list = 1;
+    int64 total = 2;
+}
+
+// ==================== Settings ====================
+
+message UpdateSettingsReq {
+    string wallet_address = 1;
+    string nickname = 2;
+    string language = 3;
+    string currency = 4;
+    int32  slippage_default = 5;
+}
+
+message UpdateSettingsResp {
+    bool success = 1;
+}
+
+// ==================== Service ====================
+
+service UserService {
+    rpc GetNonce(GetNonceReq) returns (GetNonceResp);
+    rpc Login(LoginReq) returns (LoginResp);
+    rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenResp);
+    rpc GetPortfolio(GetPortfolioReq) returns (GetPortfolioResp);
+    rpc GetActivity(GetActivityReq) returns (GetActivityResp);
+    rpc UpdateSettings(UpdateSettingsReq) returns (UpdateSettingsResp);
+}

@@ -1,0 +1,50 @@
+syntax = "proto3";
+package futures;
+option go_package = "./futures";
+
+message GetMarketsReq { int64 page = 1; int64 page_size = 2; }
+message FuturesMarketInfo {
+    string market_address = 1; string market_name = 2; string base_asset = 3;
+    string quote_asset = 4; string max_leverage = 5; string mark_price = 6;
+    string index_price = 7; string funding_rate = 8; string volume_24h = 9;
+    string open_interest = 10; bool is_active = 11;
+}
+message GetMarketsResp { repeated FuturesMarketInfo list = 1; int64 total = 2; }
+
+message GetMarketDetailReq { string market_address = 1; }
+message GetMarketDetailResp {
+    FuturesMarketInfo market = 1; string taker_fee = 2; string maker_fee = 3;
+    string maintenance_margin_rate = 4; repeated FundingRateItem funding_history = 5;
+}
+message FundingRateItem { int64 time = 1; string rate = 2; }
+
+message GetPositionsReq { string user_address = 1; }
+message FuturesPositionInfo {
+    string position_id = 1; string market_name = 2; string side = 3;
+    string size = 4; string entry_price = 5; string mark_price = 6;
+    string margin = 7; string leverage = 8; string unrealized_pnl = 9;
+    string realized_pnl = 10; string liquidation_price = 11;
+    string margin_ratio = 12; string status = 13;
+}
+message GetPositionsResp { repeated FuturesPositionInfo list = 1; string total_unrealized_pnl = 2; string total_margin = 3; }
+
+message GetFundingHistoryReq { string market_address = 1; int64 page = 2; int64 page_size = 3; }
+message GetFundingHistoryResp { repeated FundingRateItem list = 1; int64 total = 2; }
+
+message BuildOpenPositionReq {
+    string user_address = 1; string market_address = 2; string side = 3;
+    string margin = 4; string leverage = 5; string limit_price = 6;
+}
+message BuildClosePositionReq { string user_address = 1; string position_id = 2; string amount = 3; }
+message BuildAdjustMarginReq { string user_address = 1; string position_id = 2; string amount = 3; bool is_add = 4; }
+message BuildTxResp { string to = 1; string value = 2; string data = 3; string gas_limit = 4; }
+
+service FuturesService {
+    rpc GetMarkets(GetMarketsReq) returns (GetMarketsResp);
+    rpc GetMarketDetail(GetMarketDetailReq) returns (GetMarketDetailResp);
+    rpc GetPositions(GetPositionsReq) returns (GetPositionsResp);
+    rpc GetFundingHistory(GetFundingHistoryReq) returns (GetFundingHistoryResp);
+    rpc BuildOpenPosition(BuildOpenPositionReq) returns (BuildTxResp);
+    rpc BuildClosePosition(BuildClosePositionReq) returns (BuildTxResp);
+    rpc BuildAdjustMargin(BuildAdjustMarginReq) returns (BuildTxResp);
+}
